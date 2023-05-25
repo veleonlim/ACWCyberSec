@@ -2,9 +2,9 @@ import numpy as np
 import base64
 import os.path
 
-cover_source = "document.txt"
+cover_source = "coverfile.docx"
 payload_source = "password.txt"
-numOfBits = 5
+numOfBits = 1
 
 def convertBYTES(file_path):
     with open(file_path,'rb') as file:
@@ -27,11 +27,11 @@ def convertBITS(data):
         # Input type not able to be changed to binary
         raise TypeError("Input type not supported")
 
-def convertCHAR(coverByteList):
+def convertCHAR(data):
     encodedText = ""
-    for byte_in_BITS in coverByteList:
+    for byte_in_BITS in data:
         encodedText += chr(int(byte_in_BITS, 2))
-    return coverByteList
+    return encodedText
 
 def encodeDocument(cover_source,payload_source,numOfBits):
 
