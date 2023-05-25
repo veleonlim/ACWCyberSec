@@ -73,6 +73,6 @@ def decode(stegoFile, numOfBits):
         outFile.write(decodedData)'''
 
 
-stegoFile = "document1.txt"
+stegoFile = "test .txt"
 numOfBits = 5
 decode(stegoFile, numOfBits)
