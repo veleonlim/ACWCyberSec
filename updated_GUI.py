@@ -71,16 +71,17 @@ def run_extraction(path):
     print("???", msg)  # Example: printing the extracted message
     canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
 
-window = Tk()
+window = Tk(className=" Steganography Program")
 
-window.geometry("666x829")
-window.configure(bg="#FFFFFF")
+
+window.geometry("750x800")
+window.configure(bg="#E6F2FF")
 
 canvas = Canvas(
     window,
-    bg="#FFFFFF",
-    height=829,
-    width=666,
+    bg="#E6F2FF",
+    height=750,
+    width=800,
     bd=0,
     highlightthickness=0,
     relief="ridge"
@@ -88,7 +89,7 @@ canvas = Canvas(
 
 canvas.place(x=0, y=0)
 
-videoplayer_frame = tk.Frame(canvas, bg="white")
+videoplayer_frame = tk.Frame(canvas, bg="#D9D9D9")
 videoplayer_frame.place(x=39, y=118, width=160, height=160)
 
 videoplayer = TkinterVideo(master=videoplayer_frame, scaled=True)
@@ -125,7 +126,7 @@ text_item = canvas.create_text(
     anchor="nw",
     text="",
     fill="#000000",
-    font=("Inter", 12 * -1)
+   font=("Inter", 14)
     )
 
 canvas.create_text(
@@ -134,7 +135,7 @@ canvas.create_text(
     anchor="nw",
     text="Cover Object / Stego",
     fill="#000000",
-    font=("Inter", 12 * -1)
+      font=("Inter", 14)
 )
 
 canvas.create_text(
@@ -143,7 +144,7 @@ canvas.create_text(
     anchor="nw",
     text="Step 1: Upload File",
     fill="#000000",
-    font=("Inter Bold", 12 * -1)
+    font=("Helvetica 16 bold")
 )
 
 canvas.create_text(
@@ -152,7 +153,7 @@ canvas.create_text(
     anchor="nw",
     text="Step 2: Upload Payload",
     fill="#000000",
-    font=("Inter Bold", 12 * -1)
+    font=("Helvetica 16 bold")
 )
 
 canvas.create_text(
@@ -161,7 +162,7 @@ canvas.create_text(
     anchor="nw",
     text="Step 3: Select Number of LSB",
     fill="#000000",
-    font=("Inter Bold", 12 * -1)
+    font=("Helvetica 16 bold")
 )
 
 canvas.create_text(
@@ -170,7 +171,7 @@ canvas.create_text(
     anchor="nw",
     text="Step 4: Encode or Decode",
     fill="#000000",
-    font=("Inter Bold", 12 * -1)
+    font=("Helvetica 16 bold")
 )
 
 canvas.create_text(
@@ -179,7 +180,7 @@ canvas.create_text(
     anchor="nw",
     text="Payload",
     fill="#000000",
-    font=("Inter", 12 * -1)
+    font=("Inter", 14)
 )
 
 canvas.create_text(
@@ -188,7 +189,7 @@ canvas.create_text(
     anchor="nw",
     text="Output",
     fill="#000000",
-    font=("Inter", 12 * -1)
+    font=("Inter", 14)
 )
 
 canvas.create_text(
@@ -197,7 +198,7 @@ canvas.create_text(
     anchor="nw",
     text="Number of LSB (0-5)",
     fill="#000000",
-    font=("Inter", 12 * -1)
+  font=("Inter", 14)
 )
 
 # Define a global variable to store the selected number of LSB
@@ -247,7 +248,7 @@ button_2.place(
 # button_image_3 = PhotoImage(
 #     file=relative_to_assets("button_3.png"))
 button_3 = Button(
-    text="encode",
+    text="Encode",
     borderwidth=0,
     highlightthickness=0,
     relief="flat"
@@ -290,7 +291,7 @@ def Decode_button_click():
 button_3.configure(command=encode_button_click)
 # Create the decode button
 button_4 = Button(
-    text="decode",
+    text="Decode",
     borderwidth=0,
     highlightthickness=0,
     command=Decode_button_click,
