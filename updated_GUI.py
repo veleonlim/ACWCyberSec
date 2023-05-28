@@ -126,7 +126,7 @@ text_item = canvas.create_text(
     anchor="nw",
     text="",
     fill="#000000",
-   font=("Inter", 14)
+         font=("Inter 14 bold")
     )
 
 canvas.create_text(
@@ -134,8 +134,8 @@ canvas.create_text(
     92.0,
     anchor="nw",
     text="Cover Object / Stego",
-    fill="#000000",
-      font=("Inter", 14)
+fill="#000000",
+           font=("Inter 14 bold")
 )
 
 canvas.create_text(
@@ -143,7 +143,7 @@ canvas.create_text(
     36.0,
     anchor="nw",
     text="Step 1: Upload File",
-    fill="#000000",
+    fill="#055DEC",
     font=("Helvetica 16 bold")
 )
 
@@ -152,7 +152,7 @@ canvas.create_text(
     35.0,
     anchor="nw",
     text="Step 2: Upload Payload",
-    fill="#000000",
+    fill="#055DEC",
     font=("Helvetica 16 bold")
 )
 
@@ -161,7 +161,7 @@ canvas.create_text(
     34.0,
     anchor="nw",
     text="Step 3: Select Number of LSB",
-    fill="#000000",
+    fill="#055DEC",
     font=("Helvetica 16 bold")
 )
 
@@ -170,7 +170,7 @@ canvas.create_text(
     170.0,
     anchor="nw",
     text="Step 4: Encode or Decode",
-    fill="#000000",
+   fill="#055DEC",
     font=("Helvetica 16 bold")
 )
 
@@ -180,7 +180,7 @@ canvas.create_text(
     anchor="nw",
     text="Payload",
     fill="#000000",
-    font=("Inter", 14)
+    font=("Inter 14 bold")
 )
 
 canvas.create_text(
@@ -189,7 +189,7 @@ canvas.create_text(
     anchor="nw",
     text="Output",
     fill="#000000",
-    font=("Inter", 14)
+      font=("Inter 14 bold")
 )
 
 canvas.create_text(
@@ -198,7 +198,7 @@ canvas.create_text(
     anchor="nw",
     text="Number of LSB (0-5)",
     fill="#000000",
-  font=("Inter", 14)
+      font=("Inter 14 bold")
 )
 
 # Define a global variable to store the selected number of LSB
