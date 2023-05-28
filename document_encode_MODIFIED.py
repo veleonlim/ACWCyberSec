@@ -2,7 +2,7 @@ import numpy as np
 import base64
 import os.path
 
-cover_source = "coverfile.docx"
+cover_source = "document.txt"
 payload_source = "password.txt"
 numOfBits = 1
 

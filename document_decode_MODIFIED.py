@@ -2,7 +2,7 @@ import numpy as np
 import base64
 import os.path
 
-encodedStegoFile = "test123.docx" #Change to user Input
+encodedStegoFile = "abcd.txt" #Change to user Input
 numOfBits = 1 #Change to user Input
 
 def convertBYTES(file_path):

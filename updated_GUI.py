@@ -8,7 +8,7 @@ from pathlib import Path
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, filedialog
 from tkinter import *
-from imageencode import insert, extract
+from combinedENDE import insert, extract,encodeDocument,decodeDocuments
 from PIL import ImageTk,Image
 import tkinter as tk
 from tkVideoPlayer import TkinterVideo
@@ -36,7 +36,7 @@ def upload_file():
             videoplayer.load(file_path)
             videoplayer.play()
             videoplayer_frame.place(x=39, y=118, width=160, height=160)
-        elif file_extension == ".png":
+        elif file_extension == ".png" or file_extension ==".tiff":
             videoplayer.stop()
             videoplayer_frame.place_forget()
 
@@ -200,6 +200,15 @@ canvas.create_text(
     font=("Inter", 12 * -1)
 )
 
+# Define a global variable to store the selected number of LSB
+selected_lsb = StringVar()
+selected_lsb.set("0")  # Default value
+
+# Create the OptionMenu widget
+lsb_option_menu = OptionMenu(canvas, selected_lsb, "0", "1", "2", "3", "4", "5")
+lsb_option_menu.configure(width=10)
+lsb_option_menu.place(x=472.0, y=115.0, width=152.0, height=26.0)
+
 # button_image_1 = PhotoImage(
 #     file=relative_to_assets("button_1.png"))
 button_1 = Button(
@@ -207,7 +216,7 @@ button_1 = Button(
     text="Upload",
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: (upload_file(), print("button_1 clicked")),
+    command=lambda: (upload_file(), print("button_1 clicked" )),
     relief="flat"
 )
 
@@ -225,7 +234,7 @@ button_2 = Button(
     text="Upload",
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: (payload_file(), print("button_2 clicked")),
+    command=lambda: (payload_file(), print("button_2 clicked" )),
     relief="flat"
 )
 button_2.place(
@@ -238,13 +247,25 @@ button_2.place(
 # button_image_3 = PhotoImage(
 #     file=relative_to_assets("button_3.png"))
 button_3 = Button(
-    # image=button_image_3,
     text="encode",
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: insert(input_file, payload_file),
     relief="flat"
 )
+
+def encode_button_click():
+    file_extension = Path(input_file).suffix.lower()
+    if file_extension == ".txt" or file_extension == ".docx":
+        # Call your encodedocument function here
+        encodeDocument(input_file, payload_file,int(selected_lsb.get()))
+    elif file_extension == ".png" or file_extension == ".tiff":
+        # Call the insert function here
+        insert(input_file, payload_file)
+    else:
+        print("Unsupported file format")
+
+button_3.configure(command=encode_button_click)
+
 
 button_3.place(
     x=472.0,
@@ -255,12 +276,24 @@ button_3.place(
 
 # button_image_4 = PhotoImage(
 #     file=relative_to_assets("button_4.png"))
+def Decode_button_click():
+    file_extension = Path(input_file).suffix.lower()
+    if file_extension == ".txt" or file_extension == ".docx":
+        # Call your encodedocument function here
+        decodeDocuments(input_file,int(selected_lsb.get()))
+    elif file_extension == ".png" or file_extension == ".tiff":
+        # Call the insert function here
+        run_extraction(input_file)
+    else:
+        print("Unsupported file format")
+
+button_3.configure(command=encode_button_click)
+# Create the decode button
 button_4 = Button(
-    # image=button_image_4,
     text="decode",
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: run_extraction(input_file),
+    command=Decode_button_click,
     relief="flat"
 )
 button_4.place(
