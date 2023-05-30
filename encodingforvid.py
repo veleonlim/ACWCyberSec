@@ -58,6 +58,7 @@ class Encode:
     # Method to hide/encode the encrypted binary data into the cover object
     def hideData(self):
         # Find extension of cover video
+        coverName = os.path.splitext(self.coverVidPath)[0]
         coverExt = os.path.splitext(self.coverVidPath)[1]
 
         # Check if payload is a file
@@ -130,6 +131,9 @@ class Encode:
             print('Hiding in frame: ', frame+1)
             # Loop through each pixel in the current frame
             for values in image:
+                # Break the loop if all the data have been hidden
+                if (dataIndex >= dataLen):
+                    break
                 for pixel in values:
                     r = 0
                     g = 0
@@ -223,16 +227,16 @@ class Encode:
         call(["ffmpeg", "-i", "tmp/temp.avi", "-i", "tmp/audio.mp3", "-codec", "copy", "tmp/outputVid.avi", "-y"],stdout=open(os.devnull, "w"), stderr=STDOUT)
 
         # Change the temp video file into a format that can be played
-        stegoObjName = input("Filename to save as (Without file extension): ")
-        call(["ffmpeg", "-i", "tmp/outputVid.avi", "-f", "avi", "-c:v", "rawvideo", "-pix_fmt", "rgb32", stegoObjName+coverExt], stdout=open(os.devnull, "w"), stderr=STDOUT)
+        call(["ffmpeg", "-i", "tmp/outputVid.avi", "-f", "avi", "-c:v", "rawvideo", "-pix_fmt", "rgb32", coverName+"_encoded"+coverExt, "-y"], stdout=open(os.devnull, "w"), stderr=STDOUT)
 
         # Clears the temp folder
         if os.path.exists("./tmp"):
             shutil.rmtree("./tmp")
+        return coverName, coverExt 
 
-coverFile = input("Enter cover video file name: ")
-payloadFile = input("Enter payload object file name: ")
-numOfBits = int(input("Enter number of LSB to use: "))
+coverFile = "3sec.mp4"
+payloadFile = "password.txt"
+numOfBits = 1
 
-en = Encode(coverFile, payloadFile, numOfBits, False)
-en.hideData()
+en = Encode(coverFile, payloadFile, numOfBits, True)
+print(en.hideData())

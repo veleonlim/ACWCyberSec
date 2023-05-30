@@ -54,6 +54,9 @@ class Decode:
         numOfFrames = frameExtracted[0]
         imgChannels = frameExtracted[2]
 
+        # Find name of stego video
+        stegoName = os.path.splitext(self.stegoObjPath)[0]
+
         decodedData = ""
         # Loop through each frame of the stego video
         for frame in range(numOfFrames):
@@ -93,11 +96,14 @@ class Decode:
             allBytes = [binaryData[i: i+8] for i in range(0, len(binaryData), 8)]
             
             # convert from bits to characters
+            tempList = ''
             for byte in allBytes:
-                decodedData += chr(int(byte, 2))
+                tempList += chr(int(byte, 2))
                 # Stop decoding after we have reached the delimeter which is "#####"
-                if decodedData[-5:] == "#####":
+                if tempList[-5:] == "#####":
                     break
+
+            decodedData += tempList
                 
         # Removes delimeter
         decodedData = decodedData[:-5]
@@ -107,7 +113,11 @@ class Decode:
             decodedData = decodedData[:-1]
             # Converts the hidden data back to text from a Base64 format
             decodedData = base64.b64decode(eval(decodedData))
-            decodedData = decodedData.decode('utf-8')
+            fileExt = ".txt"
+            # Write the decoded data back to a .txt file and saves it
+            with open(stegoName + "_decoded.txt", "wb") as outFile:
+                outFile.write(decodedData)
+
         else:
             # Get the file extension and removes it
             fileExt = decodedData[-10:]
@@ -119,8 +129,7 @@ class Decode:
             decodedData = base64.b64decode(eval(decodedData))
 
             # Write the decoded data back to a file and saves it
-            decodedImgName = input("Filename to save as (Without file extension): ")
-            with open(decodedImgName + fileExt, "wb") as outFile:
+            with open(stegoName + "_decoded" + fileExt, "wb") as outFile:
                 outFile.write(decodedData)
             decodedData = ""
 
@@ -128,7 +137,7 @@ class Decode:
         if os.path.exists("./tmp"):
             shutil.rmtree("./tmp")
 
-        return decodedData
+        return decodedData, stegoName, fileExt
 
 filename = input("Enter file name to decode: ")
 filepath = os.path.join(os.getcwd(), filename)

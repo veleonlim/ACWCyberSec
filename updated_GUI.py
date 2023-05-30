@@ -2,13 +2,14 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 
 
+import os
 from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, filedialog
 from tkinter import *
-from combinedENDE import insert, extract,encodeDocument,decodeDocuments
+from combinedENDE import insert, extract,encodeDocument,decodeDocuments,hideData, showData
 from PIL import ImageTk,Image
 import tkinter as tk
 from tkVideoPlayer import TkinterVideo
@@ -26,8 +27,7 @@ def relative_to_assets(path: str) -> Path:
 
 def upload_file():
     file_path = filedialog.askopenfilename()
-    print(file_path)
-
+    
     if file_path:
         file_extension = Path(file_path).suffix.lower()
         print("File extension:", file_extension)
@@ -36,7 +36,7 @@ def upload_file():
             videoplayer.load(file_path)
             videoplayer.play()
             videoplayer_frame.place(x=39, y=118, width=160, height=160)
-        elif file_extension == ".png" or file_extension ==".tiff":
+        elif file_extension == ".png" or file_extension == ".tiff":
             videoplayer.stop()
             videoplayer_frame.place_forget()
 
@@ -47,8 +47,18 @@ def upload_file():
             label = tk.Label(canvas, image=photo)
             label.image = photo
             label.place(x=39, y=118)
+        elif file_extension == ".txt" or file_extension == ".docx":
+            videoplayer.stop()
+            videoplayer_frame.place_forget()
+            
+            filename = os.path.basename(file_path)
+            label = tk.Label(canvas, text=filename, wraplength=160)
+            label.place(x=38, y=118, width=160, height=160)
         else:
             print("Unsupported file format")
+
+
+    
 
     global input_file
     # file_path = filedialog.askopenfilename()
@@ -62,11 +72,25 @@ def payload_file():
     payload_file = str(file_path)
     print(payload_file)
 
+    if file_path:
+        file_extension = Path(file_path).suffix.lower()
+        print("File extension:", file_extension)
 
-def run_extraction(path):
+        if file_extension == ".txt" or file_extension == ".docx":
+            videoplayer.stop()
+            videoplayer_frame.place_forget()
+
+            label = tk.Label(canvas, text=os.path.basename(file_path), wraplength=160)
+            label.place(x=242, y=119, width=170, height=160)
+        else:
+            print("Unsupported file format")
+
+
+
+def run_extraction(path,bits):
     print("file:", path)
     extract_path = path
-    msg = extract(extract_path)
+    msg = extract(extract_path,bits)
     # Do something with the extracted message (e.g., display it in the GUI)
     print("???", msg)  # Example: printing the extracted message
     canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
@@ -74,14 +98,14 @@ def run_extraction(path):
 window = Tk(className=" Steganography Program")
 
 
-window.geometry("750x800")
+window.geometry("1000x1000")
 window.configure(bg="#E6F2FF")
 
 canvas = Canvas(
     window,
     bg="#E6F2FF",
-    height=750,
-    width=800,
+    height=1000,
+    width=1000,
     bd=0,
     highlightthickness=0,
     relief="ridge"
@@ -95,6 +119,10 @@ videoplayer_frame.place(x=39, y=118, width=160, height=160)
 videoplayer = TkinterVideo(master=videoplayer_frame, scaled=True)
 
 videoplayer.pack(expand=True, fill="both")
+
+
+
+
 canvas.create_rectangle(
     39.0,
     118.0,
@@ -261,9 +289,17 @@ def encode_button_click():
         encodeDocument(input_file, payload_file,int(selected_lsb.get()))
     elif file_extension == ".png" or file_extension == ".tiff":
         # Call the insert function here
-        insert(input_file, payload_file)
+        insert(input_file, payload_file,int(selected_lsb.get()))
+    elif file_extension == ".mp4" or file_extension == ".mp3":
+        coverfile = os.path.join(os.getcwd(), input_file)
+        encodedvid = hideData(coverfile, payload_file, int(selected_lsb.get()), True)
+        print(encodedvid)
+        videoplayer.load(encodedvid)
+        videoplayer.play()
+        videoplayer_frame.place(x=131, y=410, width=472, height=416)
     else:
         print("Unsupported file format")
+
 
 button_3.configure(command=encode_button_click)
 
@@ -281,14 +317,19 @@ def Decode_button_click():
     file_extension = Path(input_file).suffix.lower()
     if file_extension == ".txt" or file_extension == ".docx":
         # Call your encodedocument function here
-        decodeDocuments(input_file,int(selected_lsb.get()))
+        msg = decodeDocuments(input_file,int(selected_lsb.get()))
+        canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
     elif file_extension == ".png" or file_extension == ".tiff":
         # Call the insert function here
-        run_extraction(input_file)
+        run_extraction(input_file,int(selected_lsb.get()))
+    elif file_extension == ".mp4" or file_extension == ".mp3":
+        msg = showData(input_file,int(selected_lsb.get()))
+        print("???", msg)  # Example: printing the extracted message
+        canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
     else:
         print("Unsupported file format")
 
-button_3.configure(command=encode_button_click)
+
 # Create the decode button
 button_4 = Button(
     text="Decode",
