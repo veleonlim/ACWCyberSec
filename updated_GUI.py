@@ -9,10 +9,16 @@ from pathlib import Path
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, filedialog
 from tkinter import *
-from combinedENDE import insert, extract,encodeDocument,decodeDocuments,hideData, showData
+from combinedENDE import decodedocx, encodedocx, insert, extract,encodeDocument,decodeDocuments,hideData, showData
 from PIL import ImageTk,Image
 import tkinter as tk
 from tkVideoPlayer import TkinterVideo
+from tkinter import ttk
+import tkinterDnD 
+
+
+
+# Replace `Canvas(root, ...)` with `Canvas(root, dnd_enabled=True, ...)`
 
 
 input_file = ''
@@ -26,8 +32,9 @@ def relative_to_assets(path: str) -> Path:
 
 
 def upload_file():
+   
     file_path = filedialog.askopenfilename()
-    
+    print('path is this '+file_path)
     if file_path:
         file_extension = Path(file_path).suffix.lower()
         print("File extension:", file_extension)
@@ -57,8 +64,45 @@ def upload_file():
         else:
             print("Unsupported file format")
 
+    global input_file
+    # file_path = filedialog.askopenfilename()
+    input_file = str(file_path)
+    print(input_file)
 
+def dragupload_file(path):
     
+    
+    file_path = path.strip("{}")
+    
+    if file_path:
+        file_extension = Path(file_path).suffix.lower()
+        print("File extension:", file_extension)
+
+        if file_extension == ".mp4":
+            videoplayer.load(file_path)
+            videoplayer.play()
+            videoplayer_frame.place(x=39, y=118, width=160, height=160)
+          
+        elif file_extension == ".png" or file_extension == ".tiff":
+            videoplayer.stop()
+            videoplayer_frame.place_forget()
+
+            image = Image.open(file_path)
+            image.thumbnail((160, 160))
+            photo = ImageTk.PhotoImage(image)
+
+            label = tk.Label(canvas, image=photo)
+            label.image = photo
+            label.place(x=39, y=118)
+        elif file_extension == ".txt" or file_extension == ".docx":
+            videoplayer.stop()
+            videoplayer_frame.place_forget()
+            
+            filename = os.path.basename(file_path)
+            label = tk.Label(canvas, text=filename, wraplength=160)
+            label.place(x=38, y=118, width=160, height=160)
+        else:
+            print("Unsupported file format")
 
     global input_file
     # file_path = filedialog.askopenfilename()
@@ -77,6 +121,24 @@ def payload_file():
         print("File extension:", file_extension)
 
         if file_extension == ".txt" or file_extension == ".docx":
+        
+
+            label = tk.Label(canvas, text=os.path.basename(file_path), wraplength=160)
+            label.place(x=242, y=119, width=170, height=160)
+        else:
+            print("Unsupported file format")
+
+def dragpayload_file(path):
+    global payload_file
+    file_path = path.strip("{}")
+    payload_file = str(file_path)
+    print(payload_file)
+
+    if file_path:
+        file_extension = Path(file_path).suffix.lower()
+        print("File extension:", file_extension)
+
+        if file_extension == ".txt" or file_extension == ".docx":
             videoplayer.stop()
             videoplayer_frame.place_forget()
 
@@ -84,8 +146,6 @@ def payload_file():
             label.place(x=242, y=119, width=170, height=160)
         else:
             print("Unsupported file format")
-
-
 
 def run_extraction(path,bits):
     print("file:", path)
@@ -95,11 +155,29 @@ def run_extraction(path,bits):
     print("???", msg)  # Example: printing the extracted message
     canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
 
-window = Tk(className=" Steganography Program")
+window = tkinterDnD.Tk(className=" Steganography Program")
 
-
+stringvar = tk.StringVar()
+stringvar.set('Drop here or drag from here!')
+stringvar2 = tk.StringVar()
+stringvar2.set('Drop here or drag from here!')
 window.geometry("1000x1000")
 window.configure(bg="#E6F2FF")
+
+
+def drop(event):
+    # This function is called, when stuff is dropped into a widget
+    dragupload_file(event.data)
+    stringvar.set(event.data)
+
+def drag_command(event):
+    # This function is called at the start of the drag,
+    # it returns the drag type, the content type, and the actual content
+    return (tkinterDnD.COPY, "DND_Text", "Some nice dropped text!")
+def droppayload(event):
+    # This function is called, when stuff is dropped into a widget
+    dragpayload_file(event.data)
+    stringvar2.set(event.data)
 
 canvas = Canvas(
     window,
@@ -108,7 +186,8 @@ canvas = Canvas(
     width=1000,
     bd=0,
     highlightthickness=0,
-    relief="ridge"
+    relief="ridge",
+   
 )
 
 canvas.place(x=0, y=0)
@@ -122,6 +201,27 @@ videoplayer.pack(expand=True, fill="both")
 
 
 
+label_1 = tk.Label(window, textvar=stringvar, relief='solid', borderwidth=1)
+
+label_1.place(x= 39, y=325, width=160, height=35)
+
+label_1.register_drop_target("*")
+label_1.bind("<<Drop>>", drop)
+
+label_1.register_drag_source("*")
+label_1.bind("<<DragInitCmd>>", drag_command)
+
+
+# With DnD hook you just pass the command to the proper argument,
+# and tkinterDnD will take care of the rest
+# NOTE: You need a ttk widget to use these arguments
+label_2 = ttk.Label(window,textvar=stringvar2, relief="solid", borderwidth=1)
+label_2.place(x=242, y=325, width=160, height=35)
+
+label_2.register_drop_target("*")
+label_2.bind("<<Drop>>", droppayload)
+label_2.register_drag_source("*")
+label_2.bind("<<DragInitCmd>>", drag_command)
 
 canvas.create_rectangle(
     39.0,
@@ -250,9 +350,9 @@ button_1 = Button(
 )
 
 button_1.place(
-    x=116.0,
-    y=305.0,
-    width=83.0,
+    x=39.0,
+    y=285.0,
+    width=160,
     height=35.0
 )
 
@@ -267,9 +367,9 @@ button_2 = Button(
     relief="flat"
 )
 button_2.place(
-    x=318.0,
-    y=305.0,
-    width=83.0,
+    x=242.0,
+    y=285.0,
+    width=160.0,
     height=35.0
 )
 
@@ -283,10 +383,15 @@ button_3 = Button(
 )
 
 def encode_button_click():
+    print("file extension is this " +input_file)
     file_extension = Path(input_file).suffix.lower()
-    if file_extension == ".txt" or file_extension == ".docx":
+    print("file extension is this " +file_extension)
+    if file_extension == ".txt" :
         # Call your encodedocument function here
         encodeDocument(input_file, payload_file,int(selected_lsb.get()))
+
+    elif  file_extension == ".docx":
+        encodedocx(input_file, payload_file,int(selected_lsb.get()))
     elif file_extension == ".png" or file_extension == ".tiff":
         # Call the insert function here
         insert(input_file, payload_file,int(selected_lsb.get()))
@@ -315,9 +420,12 @@ button_3.place(
 #     file=relative_to_assets("button_4.png"))
 def Decode_button_click():
     file_extension = Path(input_file).suffix.lower()
-    if file_extension == ".txt" or file_extension == ".docx":
+    if file_extension == ".txt":
         # Call your encodedocument function here
         msg = decodeDocuments(input_file,int(selected_lsb.get()))
+        canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
+    elif file_extension == ".docx":
+        msg = decodedocx(input_file,int(selected_lsb.get()))
         canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
     elif file_extension == ".png" or file_extension == ".tiff":
         # Call the insert function here
