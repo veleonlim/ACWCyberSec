@@ -7,9 +7,12 @@ from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, filedialog
+import winsound
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, filedialog, messagebox, simpledialog
 from tkinter import *
 from combinedENDE import decodedocx, encodedocx, insert, extract,encodeDocument,decodeDocuments,hideData, showData
+from audio_encode import *
+from audio_decode import *
 from PIL import ImageTk,Image
 import tkinter as tk
 from tkVideoPlayer import TkinterVideo
@@ -40,6 +43,9 @@ def upload_file():
         print("File extension:", file_extension)
 
         if file_extension == ".mp4":
+            play_button.place_forget()
+            stop_button.place_forget()
+
             videoplayer.load(file_path)
             videoplayer.play()
             videoplayer_frame.place(x=39, y=118, width=160, height=160)
@@ -47,6 +53,9 @@ def upload_file():
             videoplayer.stop()
             videoplayer_frame.place_forget()
 
+            play_button.place_forget()
+            stop_button.place_forget()
+            
             image = Image.open(file_path)
             image.thumbnail((160, 160))
             photo = ImageTk.PhotoImage(image)
@@ -57,10 +66,23 @@ def upload_file():
         elif file_extension == ".txt" or file_extension == ".docx":
             videoplayer.stop()
             videoplayer_frame.place_forget()
+
+            play_button.place_forget()
+            stop_button.place_forget()
             
             filename = os.path.basename(file_path)
             label = tk.Label(canvas, text=filename, wraplength=160)
             label.place(x=38, y=118, width=160, height=160)
+        elif file_extension == ".wav":
+            videoplayer.stop()
+            videoplayer_frame.place_forget()
+            
+            filename = os.path.basename(file_path)
+            label = tk.Label(canvas, text=filename, wraplength=160)
+            label.place(x=38, y=118, width=160, height=160)
+
+            play_button.place(x=39, y=360, width=80, height=35)
+            stop_button.place(x=120, y=360, width=80, height=35)
         else:
             print("Unsupported file format")
 
@@ -69,9 +91,19 @@ def upload_file():
     input_file = str(file_path)
     print(input_file)
 
+# -- plays audio file --
+def play():
+    winsound.PlaySound(input_file,winsound.SND_ASYNC+winsound.SND_LOOP)
+
+def output_play():
+    winsound.PlaySound(input_file,winsound.SND_ASYNC+winsound.SND_LOOP)
+
+def stop_play():
+    winsound.PlaySound(None,0)
+
+# --        END        --
+
 def dragupload_file(path):
-    
-    
     file_path = path.strip("{}")
     
     if file_path:
@@ -79,6 +111,9 @@ def dragupload_file(path):
         print("File extension:", file_extension)
 
         if file_extension == ".mp4":
+            play_button.place_forget()
+            stop_button.place_forget()
+            
             videoplayer.load(file_path)
             videoplayer.play()
             videoplayer_frame.place(x=39, y=118, width=160, height=160)
@@ -87,6 +122,9 @@ def dragupload_file(path):
             videoplayer.stop()
             videoplayer_frame.place_forget()
 
+            play_button.place_forget()
+            stop_button.place_forget()
+
             image = Image.open(file_path)
             image.thumbnail((160, 160))
             photo = ImageTk.PhotoImage(image)
@@ -97,10 +135,23 @@ def dragupload_file(path):
         elif file_extension == ".txt" or file_extension == ".docx":
             videoplayer.stop()
             videoplayer_frame.place_forget()
+
+            play_button.place_forget()
+            stop_button.place_forget()
             
             filename = os.path.basename(file_path)
             label = tk.Label(canvas, text=filename, wraplength=160)
             label.place(x=38, y=118, width=160, height=160)
+        elif file_extension == ".wav":
+            videoplayer.stop()
+            videoplayer_frame.place_forget()
+            
+            filename = os.path.basename(file_path)
+            label = tk.Label(canvas, text=filename, wraplength=160)
+            label.place(x=38, y=118, width=160, height=160)
+
+            play_button.place(x=39, y=360, width=80, height=35)
+            stop_button.place(x=120, y=360, width=80, height=35)
         else:
             print("Unsupported file format")
 
@@ -110,7 +161,7 @@ def dragupload_file(path):
     print(input_file)
 
 
-def payload_file():
+def payload_file_find():
     global payload_file
     file_path = filedialog.askopenfilename()
     payload_file = str(file_path)
@@ -192,6 +243,7 @@ canvas = Canvas(
 
 canvas.place(x=0, y=0)
 
+# Video
 videoplayer_frame = tk.Frame(canvas, bg="#D9D9D9")
 videoplayer_frame.place(x=39, y=118, width=160, height=160)
 
@@ -199,8 +251,14 @@ videoplayer = TkinterVideo(master=videoplayer_frame, scaled=True)
 
 videoplayer.pack(expand=True, fill="both")
 
+# Audio
+play_button = Button(canvas, text="Play Sound", font=("Helvetica", 10),
+                     relief=GROOVE, command=play)
 
+stop_button = Button(canvas, text="Stop Sound", font=("Helvetica", 10),
+                     relief=GROOVE, command=stop_play)
 
+# Drag and Drops
 label_1 = tk.Label(window, textvar=stringvar, relief='solid', borderwidth=1)
 
 label_1.place(x= 39, y=325, width=160, height=35)
@@ -242,8 +300,8 @@ canvas.create_rectangle(
 canvas.create_rectangle(
     131.0,
     410.0,
-    572.0,
-    716.0,
+    672.0,
+    816.0,
     fill="#D9D9D9",
     outline="")
 
@@ -251,10 +309,11 @@ canvas.create_rectangle(
 text_item = canvas.create_text(
     131.0,
     410.0,
+    width=500, # Wrap Text
     anchor="nw",
     text="",
     fill="#000000",
-         font=("Inter 14 bold")
+         font=("Inter 12"),
     )
 
 canvas.create_text(
@@ -285,7 +344,7 @@ canvas.create_text(
 )
 
 canvas.create_text(
-    471.0,
+    490.0,
     34.0,
     anchor="nw",
     text="Step 3: Select Number of LSB",
@@ -363,7 +422,7 @@ button_2 = Button(
     text="Upload",
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: (payload_file(), print("button_2 clicked" )),
+    command=lambda: (payload_file_find(), print("button_2 clicked" )),
     relief="flat"
 )
 button_2.place(
@@ -386,24 +445,47 @@ def encode_button_click():
     print("file extension is this " +input_file)
     file_extension = Path(input_file).suffix.lower()
     print("file extension is this " +file_extension)
-    if file_extension == ".txt" :
-        # Call your encodedocument function here
-        encodeDocument(input_file, payload_file,int(selected_lsb.get()))
+    try:
+        if file_extension == ".txt" :
+            # Call your encodedocument function here
+            encodeDocument(input_file, payload_file,int(selected_lsb.get()))
+        elif  file_extension == ".docx":
+            encodedocx(input_file, payload_file,int(selected_lsb.get()))
+        elif file_extension == ".png" or file_extension == ".tiff":
+            # Call the insert function here
+            insert(input_file, payload_file,int(selected_lsb.get()))
+        elif file_extension == ".mp4" or file_extension == ".mp3":
+            coverfile = os.path.join(os.getcwd(), input_file)
+            encodedvid = hideData(coverfile, payload_file, int(selected_lsb.get()), True)
+            print(encodedvid)
+            videoplayer.load(encodedvid)
+            videoplayer.play()
+            videoplayer_frame.place(x=131, y=410, width=472, height=416)
+        elif file_extension==".wav":
+            if(int(selected_lsb.get()) in [3,4,5]):
+                messagebox.showinfo("Error","Only LSB 0, 1 and 2 is supported!")
+            else:
+                #coverfile = os.path.join(os.getcwd(), input_file)
+                cover = wave.open(input_file, "r")
+                with open(payload_file,'r') as file:
+                    secret = file.read()
+                messagebox.showinfo("Info","Length of message in bits: " + str(len(secret)))
 
-    elif  file_extension == ".docx":
-        encodedocx(input_file, payload_file,int(selected_lsb.get()))
-    elif file_extension == ".png" or file_extension == ".tiff":
-        # Call the insert function here
-        insert(input_file, payload_file,int(selected_lsb.get()))
-    elif file_extension == ".mp4" or file_extension == ".mp3":
-        coverfile = os.path.join(os.getcwd(), input_file)
-        encodedvid = hideData(coverfile, payload_file, int(selected_lsb.get()), True)
-        print(encodedvid)
-        videoplayer.load(encodedvid)
-        videoplayer.play()
-        videoplayer_frame.place(x=131, y=410, width=472, height=416)
-    else:
-        print("Unsupported file format")
+                msg = convertMsgToBin(secret)
+
+                nlsb = int(selected_lsb.get())
+                if nlsb==0:
+                    nlsb=1
+                if nlsb==1:
+                    nlsb=2
+                if nlsb==2:
+                    nlsb=3
+                audio_stego(cover, msg, nlsb)
+                cover.close()
+        else:
+            print("Unsupported file format")
+    except:
+        messagebox.showinfo("Error","No Payload Uploaded!")
 
 
 button_3.configure(command=encode_button_click)
@@ -434,6 +516,22 @@ def Decode_button_click():
         msg = showData(input_file,int(selected_lsb.get()))
         print("???", msg)  # Example: printing the extracted message
         canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
+    elif file_extension == ".wav":
+        if(int(selected_lsb.get()) in [3,4,5]):
+            messagebox.showinfo("Error","Only LSB 0, 1 and 2 is supported!")
+        else:
+            stego = wave.open(input_file, "r")
+            nlsb = int(selected_lsb.get())
+            if nlsb==0:
+                nlsb=1
+            if nlsb==1:
+                nlsb=2
+            if nlsb==2:
+                nlsb=3
+            size = simpledialog.askstring(title="Audio Stego",
+                                    prompt="Enter Secret Message Size")
+            msg = audio_extract(stego, nlsb, int(size))
+            canvas.itemconfigure(text_item, text=msg)  # Update the text item in the canvas
     else:
         print("Unsupported file format")
 
